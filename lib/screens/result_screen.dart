@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/player.dart';
 import '../state/game_controller.dart';
+import 'reveal_screen.dart';
 import 'setup_screen.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -102,13 +103,28 @@ class ResultScreen extends StatelessWidget {
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () {
+                final bool started = controller.startRound();
+                if (!started) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cannot start a new round. Check setup values.')),
+                  );
+                  return;
+                }
+
+                Navigator.of(context).pushReplacementNamed(RevealScreen.routeName);
+              },
+              child: const Text('New Round (Same Settings)'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () {
                 controller.setPhase(GamePhase.setup);
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   SetupScreen.routeName,
                   (Route<dynamic> route) => false,
                 );
               },
-              child: const Text('Back to Setup'),
+              child: const Text('Reconfigure Round'),
             ),
           ],
         ),
