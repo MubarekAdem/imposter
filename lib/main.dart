@@ -22,8 +22,16 @@ class ImposterApp extends StatelessWidget {
         title: 'Imposter',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0F766E)),
           useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFFF4FBF9),
+          cardTheme: const CardThemeData(
+            elevation: 0,
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+          ),
         ),
         initialRoute: SetupScreen.routeName,
         routes: <String, WidgetBuilder>{

@@ -69,64 +69,101 @@ class ResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Round Result'),
+        title: const Text('Round Result 🏁'),
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              headline,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            Text(outcomeDetail),
-            const SizedBox(height: 20),
-            const Text(
-              'Imposters',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            for (final Player imposter in imposters) Text(imposter.displayName),
-            const SizedBox(height: 20),
-            const Text(
-              'Vote Breakdown',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            if (voteCounts.isEmpty)
-              const Text('No votes submitted.')
-            else
-              for (final Player player in players)
-                Text('${player.displayName}: ${voteCounts[player.id] ?? 0} vote(s)'),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                final bool started = controller.startRound();
-                if (!started) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cannot start a new round. Check setup values.')),
-                  );
-                  return;
-                }
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          winner == WinningSide.civilians ? '🎉 $headline' : '😈 $headline',
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(outcomeDetail),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '🕵️ Imposters',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 8),
+                        for (final Player imposter in imposters) Text(imposter.displayName),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '📊 Vote Breakdown',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 8),
+                        if (voteCounts.isEmpty)
+                          const Text('No votes submitted.')
+                        else
+                          for (final Player player in players)
+                            Text('${player.displayName}: ${voteCounts[player.id] ?? 0} vote(s)'),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: () {
+                    final bool started = controller.startRound();
+                    if (!started) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Cannot start a new round. Check setup values.')),
+                      );
+                      return;
+                    }
 
-                Navigator.of(context).pushReplacementNamed(RevealScreen.routeName);
-              },
-              child: const Text('New Round (Same Settings)'),
+                    Navigator.of(context).pushReplacementNamed(RevealScreen.routeName);
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: const Text('New Round (Same Settings)'),
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    controller.setPhase(GamePhase.setup);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      SetupScreen.routeName,
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  icon: const Icon(Icons.tune_rounded),
+                  label: const Text('Reconfigure Round'),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () {
-                controller.setPhase(GamePhase.setup);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  SetupScreen.routeName,
-                  (Route<dynamic> route) => false,
-                );
-              },
-              child: const Text('Reconfigure Round'),
-            ),
-          ],
+          ),
         ),
       ),
     );

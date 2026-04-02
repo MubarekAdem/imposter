@@ -74,42 +74,69 @@ class _VotingScreenState extends State<VotingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Voting'),
+        title: const Text('Voting 🗳️'),
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              'Voter ${_currentVoterIndex + 1} of ${players.length}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '🙋 Voter ${_currentVoterIndex + 1} of ${players.length}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 8),
+                        Text('${currentVoter.displayName}, choose who you suspect.'),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      children: [
+                        for (final Player suspect in players)
+                          RadioListTile<int>(
+                            value: suspect.id,
+                            groupValue: _selectedSuspectId,
+                            title: Text(suspect.displayName),
+                            subtitle: Text('Vote for ${suspect.displayName}'),
+                            onChanged: (int? value) {
+                              setState(() {
+                                _selectedSuspectId = value;
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: _selectedSuspectId == null
+                      ? null
+                      : () => _submitVote(controller, players),
+                  icon: const Icon(Icons.how_to_vote_rounded),
+                  label: Text(
+                    _currentVoterIndex == players.length - 1
+                        ? 'Submit Final Vote'
+                        : 'Submit and Next Voter',
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text('${currentVoter.displayName}, choose who you suspect.'),
-            const SizedBox(height: 16),
-            for (final Player suspect in players)
-              RadioListTile<int>(
-                value: suspect.id,
-                groupValue: _selectedSuspectId,
-                title: Text(suspect.displayName),
-                subtitle: Text('Vote for ${suspect.displayName}'),
-                onChanged: (int? value) {
-                  setState(() {
-                    _selectedSuspectId = value;
-                  });
-                },
-              ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _selectedSuspectId == null
-                  ? null
-                  : () => _submitVote(controller, players),
-              child: Text(
-                _currentVoterIndex == players.length - 1 ? 'Submit Final Vote' : 'Submit and Next Voter',
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
