@@ -17,7 +17,10 @@ class GameController extends ChangeNotifier {
   int playerCount = 4;
   int imposterCount = 1;
   WordMode wordMode = WordMode.random;
+  WordLanguage wordLanguage = WordLanguage.english;
   String manualWord = '';
+  bool useCustomPlayerNames = false;
+  List<String> customPlayerNames = List<String>.filled(4, '');
 
   GamePhase phase = GamePhase.setup;
   GameRound? currentRound;
@@ -107,6 +110,14 @@ class GameController extends ChangeNotifier {
     if (imposterCount >= playerCount) {
       imposterCount = playerCount - 1;
     }
+    if (customPlayerNames.length < playerCount) {
+      customPlayerNames = <String>[
+        ...customPlayerNames,
+        ...List<String>.filled(playerCount - customPlayerNames.length, ''),
+      ];
+    } else if (customPlayerNames.length > playerCount) {
+      customPlayerNames = customPlayerNames.sublist(0, playerCount);
+    }
     notifyListeners();
   }
 
@@ -121,8 +132,26 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateWordLanguage(WordLanguage language) {
+    wordLanguage = language;
+    notifyListeners();
+  }
+
   void updateManualWord(String value) {
     manualWord = value;
+    notifyListeners();
+  }
+
+  void setUseCustomPlayerNames(bool value) {
+    useCustomPlayerNames = value;
+    notifyListeners();
+  }
+
+  void updatePlayerName({required int index, required String value}) {
+    if (index < 0 || index >= customPlayerNames.length) {
+      return;
+    }
+    customPlayerNames[index] = value;
     notifyListeners();
   }
 
@@ -144,9 +173,12 @@ class GameController extends ChangeNotifier {
     final List<Player> players = List<Player>.generate(playerCount, (int index) {
       final int id = index + 1;
       final bool isImposter = imposterIds.contains(id);
+      final String fallbackName = 'Player $id';
+      final String candidateName =
+          useCustomPlayerNames ? customPlayerNames[index].trim() : '';
       return Player(
         id: id,
-        displayName: 'Player $id',
+        displayName: candidateName.isEmpty ? fallbackName : candidateName,
         isImposter: isImposter,
         assignedWord: isImposter ? null : selectedWord,
       );
@@ -192,6 +224,8 @@ class GameController extends ChangeNotifier {
 
   String _pickRandomWord() {
     final Random random = Random();
-    return kDefaultWordPool[random.nextInt(kDefaultWordPool.length)];
+    final List<String> sourcePool =
+        wordLanguage == WordLanguage.amharic ? kAmharicWordPool : kEnglishWordPool;
+    return sourcePool[random.nextInt(sourcePool.length)];
   }
 }

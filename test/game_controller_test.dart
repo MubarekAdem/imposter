@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:imposter/data/words.dart';
 import 'package:imposter/models/game_round.dart';
 import 'package:imposter/state/game_controller.dart';
 
@@ -77,6 +78,42 @@ void main() {
       expect(controller.currentRound!.wordMode, WordMode.manual);
       expect(controller.currentRound!.word, 'Banana');
       expect(controller.votesByVoter, isEmpty);
+    });
+
+    test('optional custom names are applied with default fallback', () {
+      final GameController controller = GameController();
+
+      controller.updatePlayerCount(4);
+      controller.setUseCustomPlayerNames(true);
+      controller.updatePlayerName(index: 0, value: 'Mubarek');
+      controller.updatePlayerName(index: 1, value: '  ');
+      controller.updatePlayerName(index: 2, value: 'Sara');
+      controller.updatePlayerName(index: 3, value: 'Omar');
+
+      expect(controller.startRound(), isTrue);
+
+      final List<String> names =
+          controller.playersInRound.map((player) => player.displayName).toList();
+      expect(names[0], 'Mubarek');
+      expect(names[1], 'Player 2');
+      expect(names[2], 'Sara');
+      expect(names[3], 'Omar');
+    });
+
+    test('random word follows selected language pool', () {
+      final GameController controller = GameController();
+
+      controller.updateWordMode(WordMode.random);
+
+      controller.updateWordLanguage(WordLanguage.english);
+      expect(controller.startRound(), isTrue);
+      final String englishWord = controller.currentRound!.word!;
+      expect(kEnglishWordPool.contains(englishWord), isTrue);
+
+      controller.updateWordLanguage(WordLanguage.amharic);
+      expect(controller.startRound(), isTrue);
+      final String amharicWord = controller.currentRound!.word!;
+      expect(kAmharicWordPool.contains(amharicWord), isTrue);
     });
   });
 }

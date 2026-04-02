@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../data/words.dart';
 import '../models/game_round.dart';
 import '../state/game_controller.dart';
 import 'reveal_screen.dart';
@@ -70,6 +71,33 @@ class SetupScreen extends StatelessWidget {
                             controller.updateImposterCount(value.round());
                           },
                         ),
+                        const SizedBox(height: 8),
+                        SwitchListTile.adaptive(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('✍️ Use custom player names'),
+                          subtitle: const Text('Optional: leave any field empty to use default Player N.'),
+                          value: controller.useCustomPlayerNames,
+                          onChanged: controller.setUseCustomPlayerNames,
+                        ),
+                        if (controller.useCustomPlayerNames) ...<Widget>[
+                          const SizedBox(height: 8),
+                          for (int i = 0; i < controller.playerCount; i++)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: TextFormField(
+                                key: ValueKey<String>('player_name_$i'),
+                                initialValue: controller.customPlayerNames[i],
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: 'Player ${i + 1} Name (Optional)',
+                                  prefixIcon: const Icon(Icons.person_rounded),
+                                ),
+                                onChanged: (String value) {
+                                  controller.updatePlayerName(index: i, value: value);
+                                },
+                              ),
+                            ),
+                        ],
                       ],
                     ),
                   ),
@@ -101,6 +129,33 @@ class SetupScreen extends StatelessWidget {
                           onSelectionChanged: (Set<WordMode> value) {
                             controller.updateWordMode(value.first);
                           },
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          '🌐 Random Word Language',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        SegmentedButton<WordLanguage>(
+                          segments: const [
+                            ButtonSegment<WordLanguage>(
+                              value: WordLanguage.english,
+                              label: Text('English'),
+                            ),
+                            ButtonSegment<WordLanguage>(
+                              value: WordLanguage.amharic,
+                              label: Text('Amharic'),
+                            ),
+                          ],
+                          selected: <WordLanguage>{controller.wordLanguage},
+                          onSelectionChanged: (Set<WordLanguage> value) {
+                            controller.updateWordLanguage(value.first);
+                          },
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Used when Word Source is Random.',
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                         if (controller.wordMode == WordMode.manual) ...<Widget>[
                           const SizedBox(height: 12),
