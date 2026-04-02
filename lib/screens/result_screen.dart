@@ -19,6 +19,9 @@ class ResultScreen extends StatefulWidget {
 
 class _ResultScreenState extends State<ResultScreen>
     with SingleTickerProviderStateMixin {
+  static const Color _bgTop = Color(0xFF131D61);
+  static const Color _bgBottom = Color(0xFF0A103A);
+
   late final AnimationController _typingController;
   String _animatedWord = '';
 
@@ -111,67 +114,109 @@ class _ResultScreenState extends State<ResultScreen>
     }
 
     return Scaffold(
+      backgroundColor: _bgBottom,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Round Result 🏁'),
+        title: const Text('Round Result'),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.white,
       ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Card(
-                  child: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[_bgTop, _bgBottom],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Container(
                     padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           winner == WinningSide.civilians ? '🎉 $headline' : '😈 $headline',
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                         const SizedBox(height: 8),
-                        Text(outcomeDetail),
+                        const Text(
+                          'Round Outcome',
+                          style: TextStyle(color: Color(0xFFAFC4F9), fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          outcomeDetail,
+                          style: const TextStyle(color: Color(0xFFE5EEFF), fontWeight: FontWeight.w600),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
+                  const SizedBox(height: 12),
+                  Container(
                     padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF142B79),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFF3A58B8)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           '🕵️ Imposters',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 8),
-                        for (final Player imposter in imposters) Text(imposter.displayName),
+                        for (final Player imposter in imposters)
+                          Text(
+                            imposter.displayName,
+                            style: const TextStyle(color: Color(0xFFDCE8FF), fontWeight: FontWeight.w700),
+                          ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
+                  const SizedBox(height: 12),
+                  Container(
                     padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF142B79),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFF3A58B8)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           '🔤 Secret Word',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 10),
                         AnimatedBuilder(
                           animation: _typingController,
                           builder: (BuildContext context, Widget? child) {
                             if (_animatedWord.isEmpty) {
-                              return const Text('No word available.');
+                              return const Text(
+                                'No word available.',
+                                style: TextStyle(color: Color(0xFFD1DFFF)),
+                              );
                             }
 
                             final int visibleCount =
@@ -183,8 +228,9 @@ class _ResultScreenState extends State<ResultScreen>
                             return Text(
                               done ? visibleWord : '$visibleWord|',
                               style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFFFF1A6),
+                                fontSize: 34,
+                                fontWeight: FontWeight.w900,
                                 letterSpacing: 0.5,
                               ),
                             );
@@ -193,57 +239,85 @@ class _ResultScreenState extends State<ResultScreen>
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
+                  const SizedBox(height: 12),
+                  Container(
                     padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF142B79),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFF3A58B8)),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
                           '📊 Vote Breakdown',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800),
                         ),
                         const SizedBox(height: 8),
                         if (voteCounts.isEmpty)
-                          const Text('No votes submitted.')
+                          const Text(
+                            'No votes submitted.',
+                            style: TextStyle(color: Color(0xFFD1DFFF)),
+                          )
                         else
                           for (final Player player in players)
-                            Text('${player.displayName}: ${voteCounts[player.id] ?? 0} vote(s)'),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                '${player.displayName}: ${voteCounts[player.id] ?? 0} vote(s)',
+                                style: const TextStyle(
+                                  color: Color(0xFFE3ECFF),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                FilledButton.icon(
-                  onPressed: () {
-                    final bool started = controller.startRound();
-                    if (!started) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cannot start a new round. Check setup values.')),
-                      );
-                      return;
-                    }
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF40D67B),
+                      foregroundColor: const Color(0xFF0B3C2A),
+                      minimumSize: const Size.fromHeight(54),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                      textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+                    ),
+                    onPressed: () {
+                      final bool started = controller.startRound();
+                      if (!started) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Cannot start a new round. Check setup values.')),
+                        );
+                        return;
+                      }
 
-                    Navigator.of(context).pushReplacementNamed(RevealScreen.routeName);
-                  },
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: const Text('New Round (Same Settings)'),
-                ),
-                const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    controller.setPhase(GamePhase.setup);
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      SetupScreen.routeName,
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  icon: const Icon(Icons.tune_rounded),
-                  label: const Text('Reconfigure Round'),
-                ),
-              ],
+                      Navigator.of(context).pushReplacementNamed(RevealScreen.routeName);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('NEW ROUND (SAME SETTINGS)'),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFCFE1FF),
+                      side: const BorderSide(color: Color(0xFF4A6AC5)),
+                      minimumSize: const Size.fromHeight(52),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    ),
+                    onPressed: () {
+                      controller.setPhase(GamePhase.setup);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        SetupScreen.routeName,
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                    icon: const Icon(Icons.tune_rounded),
+                    label: const Text('RECONFIGURE ROUND'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

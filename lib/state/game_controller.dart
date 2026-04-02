@@ -176,9 +176,11 @@ class GameController extends ChangeNotifier {
       final String fallbackName = 'Player $id';
       final String candidateName =
           useCustomPlayerNames ? customPlayerNames[index].trim() : '';
+      final String playerName = candidateName.isEmpty ? fallbackName : candidateName;
       return Player(
         id: id,
-        displayName: candidateName.isEmpty ? fallbackName : candidateName,
+        displayName: playerName,
+        avatarSeed: '$playerName-$id-${random.nextInt(100000)}',
         isImposter: isImposter,
         assignedWord: isImposter ? null : selectedWord,
       );
