@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/player.dart';
 import '../state/game_controller.dart';
 import 'setup_screen.dart';
 
@@ -11,20 +12,93 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GameController controller = context.watch<GameController>();
+    final GameController controller = context.read<GameController>();
+    final List<Player> players = controller.playersInRound;
+
+    if (players.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Result')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('No active round found. Start from setup.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () {
+                    controller.setPhase(GamePhase.setup);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      SetupScreen.routeName,
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  child: const Text('Back to Setup'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final WinningSide winner = controller.winningSide;
+    final bool tie = controller.hasTopVoteTie;
+    final List<Player> imposters = controller.imposterPlayers;
+    final Map<int, int> voteCounts = controller.voteCounts;
+    final List<int> topVotedIds = controller.topVotedPlayerIds;
+
+    String headline;
+    if (winner == WinningSide.civilians) {
+      headline = 'Civilians Win';
+    } else {
+      headline = 'Imposters Win';
+    }
+
+    String outcomeDetail;
+    if (tie) {
+      outcomeDetail = 'Top votes tied. By rule, imposters win this round.';
+    } else if (topVotedIds.isEmpty) {
+      outcomeDetail = 'No votes were submitted.';
+    } else {
+      final Player? topVoted = controller.getPlayerById(topVotedIds.first);
+      outcomeDetail = '${topVoted?.displayName ?? 'Unknown player'} got the most votes.';
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Result Placeholder')),
+      appBar: AppBar(
+        title: const Text('Round Result'),
+        automaticallyImplyLeading: false,
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            const Text(
-              'Phase 4 will add winner calculation and vote breakdown.',
-              style: TextStyle(fontSize: 16),
+            Text(
+              headline,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            Text('Controller phase: ${controller.phase.name}'),
+            Text(outcomeDetail),
+            const SizedBox(height: 20),
+            const Text(
+              'Imposters',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            for (final Player imposter in imposters) Text(imposter.displayName),
+            const SizedBox(height: 20),
+            const Text(
+              'Vote Breakdown',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            if (voteCounts.isEmpty)
+              const Text('No votes submitted.')
+            else
+              for (final Player player in players)
+                Text('${player.displayName}: ${voteCounts[player.id] ?? 0} vote(s)'),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () {
