@@ -15,18 +15,17 @@ class ResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Result Placeholder')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
             const Text(
-              'Phase 1 only: result calculations will be implemented in Phase 4.',
+              'Phase 4 will add winner calculation and vote breakdown.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 12),
             Text('Controller phase: ${controller.phase.name}'),
-            const Spacer(),
+            const SizedBox(height: 24),
             FilledButton(
               onPressed: () {
                 controller.setPhase(GamePhase.setup);
