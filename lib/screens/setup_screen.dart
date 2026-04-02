@@ -282,7 +282,7 @@ class SetupScreen extends StatelessWidget {
                         if (controller.wordMode == WordMode.manual) ...<Widget>[
                           const SizedBox(height: 12),
                           TextFormField(
-                            key: ValueKey<String>('manual_word_${controller.manualWord}'),
+                            key: const ValueKey<String>('manual_word_input'),
                             initialValue: controller.manualWord,
                             style: const TextStyle(color: _textPrimary),
                             decoration: InputDecoration(
@@ -351,7 +351,7 @@ class SetupScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: TextFormField(
-                                key: ValueKey<String>('name_${i}_${controller.customPlayerNames[i]}'),
+                                key: ValueKey<int>(i),
                                 initialValue: controller.customPlayerNames[i],
                                 style: const TextStyle(color: _textPrimary),
                                 decoration: InputDecoration(
