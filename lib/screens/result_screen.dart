@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,10 +8,51 @@ import '../state/game_controller.dart';
 import 'reveal_screen.dart';
 import 'setup_screen.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key});
 
   static const String routeName = '/result';
+
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _typingController;
+  String _animatedWord = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _typingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+      value: 0,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final GameController controller = context.read<GameController>();
+    final String word = controller.currentRound?.word ?? '';
+
+    if (word != _animatedWord) {
+      _animatedWord = word;
+      final int durationMs = math.max(700, math.min(2800, word.length * 95));
+      _typingController.duration = Duration(milliseconds: durationMs);
+      _typingController
+        ..reset()
+        ..forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _typingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +151,45 @@ class ResultScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         for (final Player imposter in imposters) Text(imposter.displayName),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '🔤 Secret Word',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 10),
+                        AnimatedBuilder(
+                          animation: _typingController,
+                          builder: (BuildContext context, Widget? child) {
+                            if (_animatedWord.isEmpty) {
+                              return const Text('No word available.');
+                            }
+
+                            final int visibleCount =
+                                (_animatedWord.length * _typingController.value).ceil();
+                            final int clampedCount = visibleCount.clamp(0, _animatedWord.length);
+                            final String visibleWord = _animatedWord.substring(0, clampedCount);
+                            final bool done = _typingController.value >= 1;
+
+                            return Text(
+                              done ? visibleWord : '$visibleWord|',
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.5,
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
