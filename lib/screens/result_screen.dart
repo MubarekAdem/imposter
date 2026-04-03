@@ -519,80 +519,75 @@ class _ResultScreenState extends State<ResultScreen>
                       LayoutBuilder(
                         builder: (BuildContext context, BoxConstraints constraints) {
                           final bool isNarrow = constraints.maxWidth < 430;
-                          final List<Widget> buttons = [
-                            Expanded(
-                              child: FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFF38A6FF),
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size.fromHeight(56),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  textStyle: const TextStyle(fontWeight: FontWeight.w900),
-                                ),
-                                onPressed: () {
-                                  final bool started = controller.startRound();
-                                  if (!started) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Cannot start a new round. Check setup values.',
-                                        ),
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  Navigator.of(context)
-                                      .pushReplacementNamed(RevealScreen.routeName);
-                                },
-                                child: const Text(
-                                  'NEW ROUND\n(Same Players & Word)',
-                                  textAlign: TextAlign.center,
-                                ),
+                          final Widget newRoundButton = FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF38A6FF),
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size.fromHeight(56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
                               ),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w900),
                             ),
-                            Expanded(
-                              child: FilledButton(
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFF2FC65F),
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size.fromHeight(56),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
+                            onPressed: () {
+                              final bool started = controller.startRound();
+                              if (!started) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Cannot start a new round. Check setup values.',
+                                    ),
                                   ),
-                                  textStyle: const TextStyle(fontWeight: FontWeight.w900),
-                                ),
-                                onPressed: () {
-                                  controller.setPhase(GamePhase.setup);
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                    SetupScreen.routeName,
-                                    (Route<dynamic> route) => false,
-                                  );
-                                },
-                                child: const Text(
-                                  'NEW SETUP\n(Change Settings)',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
+                                );
+                                return;
+                              }
+                              Navigator.of(context)
+                                  .pushReplacementNamed(RevealScreen.routeName);
+                            },
+                            child: const Text(
+                              'NEW ROUND\n(Same Players & Word)',
+                              textAlign: TextAlign.center,
                             ),
-                          ];
+                          );
+
+                          final Widget newSetupButton = FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF2FC65F),
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size.fromHeight(56),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w900),
+                            ),
+                            onPressed: () {
+                              controller.setPhase(GamePhase.setup);
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                SetupScreen.routeName,
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            child: const Text(
+                              'NEW SETUP\n(Change Settings)',
+                              textAlign: TextAlign.center,
+                            ),
+                          );
 
                           if (isNarrow) {
                             return Column(
                               children: [
-                                SizedBox(width: double.infinity, child: buttons[0]),
+                                SizedBox(width: double.infinity, child: newRoundButton),
                                 const SizedBox(height: 10),
-                                SizedBox(width: double.infinity, child: buttons[1]),
+                                SizedBox(width: double.infinity, child: newSetupButton),
                               ],
                             );
                           }
 
                           return Row(
                             children: [
-                              buttons[0],
+                              Expanded(child: newRoundButton),
                               const SizedBox(width: 10),
-                              buttons[1],
+                              Expanded(child: newSetupButton),
                             ],
                           );
                         },

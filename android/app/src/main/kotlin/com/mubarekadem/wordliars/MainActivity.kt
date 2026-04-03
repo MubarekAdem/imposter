@@ -1,4 +1,4 @@
-package com.example.imposter
+package com.mubarekadem.wordliars
 
 import io.flutter.embedding.android.FlutterActivity
 
