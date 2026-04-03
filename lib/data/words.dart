@@ -1,9 +1,7 @@
-import 'dart:collection';
-
 enum WordLanguage { english, amharic }
 
 // Public pools used by the game controller.
-// Each list is generated to contain exactly 1000 unique entries.
+// Each list is generated to contain exactly 1000 entries.
 final List<String> kEnglishWordPool =
     _buildSingleWordPool(baseWords: _englishBaseWords, target: 1000);
 final List<String> kAmharicWordPool =
@@ -13,21 +11,19 @@ List<String> _buildSingleWordPool({
   required List<String> baseWords,
   required int target,
 }) {
-  final LinkedHashSet<String> pool = LinkedHashSet<String>.from(
-    baseWords.map(_compactToken),
-  );
+  if (baseWords.isEmpty) {
+    return const <String>[];
+  }
 
-  int i = 1;
+  final List<String> pool = <String>[];
+  int i = 0;
   while (pool.length < target) {
-    final String base = _compactToken(baseWords[(i - 1) % baseWords.length]);
-    pool.add('${base}_$i');
+    pool.add(baseWords[i % baseWords.length]);
     i += 1;
   }
 
-  return pool.take(target).toList(growable: false);
+  return List<String>.unmodifiable(pool);
 }
-
-String _compactToken(String value) => value.replaceAll(' ', '');
 
 const List<String> _englishBaseWords = <String>[
   'Forest',
